@@ -1,166 +1,191 @@
 import sys
+import subprocess
+import json
+from os import path, stat,execl, system
 from PyQt5 import QtGui, QtCore
-from PyQt5.QtWidgets import QApplication, QPushButton, QWidget, QCheckBox, QMessageBox, QInputDialog
+from PyQt5.QtWidgets import QApplication, QPushButton, QWidget, QCheckBox, QMessageBox, QInputDialog, QVBoxLayout
 import string
 
-class Window(QWidget):
-    content = ''
-    count = int()
-    l =[]
-    z = []
-    ln = []
-    a = -30
-    num = 0
-    countt = len(open('data.txt').readlines())
-    xn = []
-    # count = len(open('data.txt').readlines())
-    # print(count)
+class window(QWidget):
+    s = int
+    checklist = {}
+    objsCount = -1
+    ls = []
+    bx = QCheckBox
+    lista = []
+    readd = True
 
     def __init__(self):
         super().__init__()
 
         self.initUI()
 
+    def restart_program(self):
+        """Restarts the current program.
+        Note: this function does not return. Any cleanup action (like
+        saving data) must be done before calling this function."""
+        python = sys.executable
+        execl(python, python, *sys.argv)
+        QApplication.exit(0);
 
     def initUI(self):
-        self.setGeometry(50,50,500,300)
+        self.s = int
+        # self.checklist = {}
+        self.objsCount = -1
+        # self.ls = []
+        self.bx = QCheckBox
+        # self.lista = []
+
+        self.setGeometry(50, 50, 500, 300)
         self.setWindowTitle('SD')
 
-        if self.num == 0:
-
-
-            cnt = len(open('data.txt').readlines())
-            with open('data.txt','r')as fl:
-                self.z.clear()
-                for line in fl:
-                    self.xn.append(line)
-            for x in range(cnt):
-                if self.xn == ' ':
-                    continue
-                self.a += 30
-                self.z.append(QCheckBox(self.xn[x], self))
-                self.z[x].show()
-                self.z[x].move(0, self.a)
-
-            cnt = 0
-            self.xn.clear()
-            self.a = -30
-            #self.z.clear()
-
-        btn = QPushButton('Add', self)
-        btn.move(210,250)
+        btn = QPushButton('add', self)
+        btn.move(160, 250)
         btn.clicked.connect(self.createobj)
 
-        btn1 = QPushButton('Delete', self)
-        btn1.move(210, 280)
-        btn1.clicked.connect(self.deleteobj)
+        deletebtn = QPushButton('delete',self)
+        deletebtn.move(280,250)
+        deletebtn.clicked.connect(self.delete)
+
+        self.read()
 
         self.show()
 
+
     def createobj(self):
-        self.num += 1
-        if self.num > 1:
-            self.ln.clear()
-        dlg = QInputDialog()
-        dlg.show()
-        dlg.exec_()
-        if dlg.textValue() != '':
-            self.content = dlg.textValue()
-            with open('data.txt','a')as file:
-                file.write(self.content + '\r')
+        self.objsCount = self.objsCount + 1
+        msg = QInputDialog()
+        msg.exec_()
 
-        self.count = len(open('data.txt').readlines())
-        print(self.count)
+        # if path.isfile('data.json') is True:
+        #     with open ('data.json','r') as f:
+        #         data = json.load(f)
+        #         self.checklist = data
+        #         print(self.checklist)
+        #         print(type(self.checklist))
 
-            # chk = QCheckBox(self.content,self)
-            # chk
+        txt = msg.textValue()
+        if txt != '' and not txt.isspace():
+            self.ls.clear()
+            for i in self.checklist:
+                # self.ls.clear()
+                self.ls.append(i)
 
+            if not self.ls:
+                self.ls.append(-1)
+            print(self.ls,'ls')
+            self.s = max(self.ls)
+            self.s = int(self.s) + 1
 
-        with open('data.txt','r') as f:
-            for line in f:
-                # if len(self.ln) == (self.count-1):
-                #     # break
-                self.ln.append(line)
-
-        for x in range(self.count):
-            if self.num == 1:
-                if self.l == ' ':
-                    continue
-                self.a += 30
-                self.l.append(QCheckBox(self.ln[x],self))
-                self.l[x].show()
-                self.l[x].move(0,self.a)
-            if self.num > 1 and x == (self.count-1) and dlg.textValue() != '' :
-                self.a += 30
-                self.l.append(QCheckBox(self.ln[x], self))
-                self.l[x].show()
-                self.l[x].move(0, self.a)
-
-    def deleteobj(self):
-        n = 0
-        sp = 0
-        t = ''
-        ls = []
-        c = ''
-        y = ''
-        v = ''
-        cn = int()
-        for x in range(self.countt):
-            if self.z[x].isChecked():
-                t = str((self.z[x].text()))
-                t = t.strip('\n')
-                # v = str(t)
-                print(t)
-                # v = "'" + t + "'"
-                file = open('data.txt', 'r')
-                c = str(file.readlines())
-                # c = c.replace(t,'')
-                print(c)
-                # print([pos for pos, char in enumerate(c)])
-                start = c.find(t)
-                print(start)
-                index = c.find(t) + len(t) + 6
-                print(index)
-                sl = slice(start,index,1)
-                nw = c.replace(c[sl],'')
-                print(nw)
-
-                with open('data.txt', 'w') as f:
-                    for char in nw:
-                        if char.isalpha() or char == ' ' or char == '\\':
-                            if char == '\\':
-                                n += 1
-                                continue
-                            if char == 'n' and n == 1:
-                                f.write('\n')
-                                n = 0
-                                sp += 1
-                                continue
-                            if char == ' ' and sp == 1:
-                                sp = 0
-                                continue
-
-                            f.write(char)
-                            print(char)
-                            if cn == (len(nw)-1):
-                                f.write('\n')
-
-                # with open('data.txt', 'r')as fl:
-                #     for line in fl:
-                #         ls.append(line)
-                for x in range(len(self.z)):
-                    self.z[x].hide()
-
-        self.initUI()
+            self.checklist.update({self.s:txt})
+            # print(self.checklist,'check')
+            # bxx = QCheckBox(txt,self)
+            # bxx.show()
+            # bxx.move(10, self.s*20)
+            # self.lista.append(bxx)
+            # print(self.s)
+            self.updateS()
+            self.initUI()
 
 
+    def updateS(self):
+        # print(json.dumps(self.checklist))
+
+        # if path.isfile('data.json') is True:
+        #     with open ('data.json','r') as f:
+        #         data = json.load(f)
+        #         self.checklist = data
+        #         print(self.checklist)
+        #         print(type(self.checklist))
+
+        try:
+            with open('data.json','w') as f:
+                data = json.dump(self.checklist,f)
+                # print(data)
+
+                # for i in self.checklist:
+                #     self.ls.append(str(i))
+                print(max(self.ls))
+        except Exception as e:
+            print(e)
+
+    def read(self):
+        self.ls.clear()
+        with open('data.json','r') as f:
+
+            for i in self.lista:
+                i.setParent(None)
+
+            if path.getsize('data.json') is not 0:
+                data = json.load(f)
+                self.checklist = data
+                self.sort()
+                for i, t in self.checklist.items():
+                    self.ls.append(i)
+                    txt = t
+                    bx = QCheckBox(txt, self)
+                    bx.move(10, int(i) * 20)
+                    bx.show()
+                    print(i,'bx')
+                    self.lista.append(bx)
+                    print(self.lista)
 
 
+                # self.s = max(self.ls)
+                # self.s = int(self.s) + 1
+
+    def delete(self):
+        txt = ''
+        isDel = False
+        refk = str
+        refv = str
+        for i in self.lista:
+            if i.isChecked():
+                print('yaay')
+                txt = i.text()
+                # i.deleteLater()
+                self.lista.remove(i)
+                i.setParent(None)
+        for key, value in self.checklist.items():
+            #
+            # if isDel is True:
+            #
+            #
+
+            if value == txt:
+
+                # self.checklist[str(int(key)+1)] = self.checklist[key]
+                del self.checklist[key]
+                print(self.checklist)
+                isDel = True
+                print(key)
+                self.updateS()
+
+                self.initUI()
+
+                break
+
+    def sort(self):
+        dic = {}
+        itr = 0
+        for k,i in self.checklist.items():
+            dic.update({str(itr):i})
+            itr += 1
+        self.checklist = dic
+        print(self.checklist,'hobaaaa')
 
 
 
 app = QApplication(sys.argv)
 
-gui = Window()
+def main():
 
-app.exec_()
+    gui = window()
+
+    app.exec_()
+
+try:
+    if __name__ == '__main__':
+        main()
+except Exception as e:
+    print(e)
