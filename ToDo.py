@@ -20,14 +20,6 @@ class window(QWidget):
 
         self.initUI()
 
-    def restart_program(self):
-        """Restarts the current program.
-        Note: this function does not return. Any cleanup action (like
-        saving data) must be done before calling this function."""
-        python = sys.executable
-        execl(python, python, *sys.argv)
-        QApplication.exit(0);
-
     def initUI(self):
         self.s = int
         # self.checklist = {}
