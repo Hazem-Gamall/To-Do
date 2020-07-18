@@ -176,6 +176,7 @@ def main():
 
     app.exec_()
 
+    
 try:
     if __name__ == '__main__':
         main()
